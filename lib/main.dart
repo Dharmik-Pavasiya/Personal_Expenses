@@ -1,121 +1,109 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import './model/transaction_model.dart';
+import 'package:personal_expenses/widgets/new_transaction.dart';
+import 'package:personal_expenses/widgets/transaction_list.dart';
+import 'model/transaction_model.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
-class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key);
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
 
-  List<TranscationModel> transcations = [
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Personal Expenses',
+      theme: ThemeData(
+        primarySwatch: Colors.purple,
+        accentColor: Colors.amber,
+        fontFamily: 'Quicksand',
+        appBarTheme: AppBarTheme(
+          textTheme: ThemeData.light().textTheme.copyWith(
+                bodyText2: const TextStyle(
+                  fontFamily: 'OpenSans',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 50,
+                ),
+              ),
+        ),
+      ),
+      home: const Homw(),
+    );
+  }
+}
+
+class Homw extends StatefulWidget {
+  const Homw({Key? key}) : super(key: key);
+
+  @override
+  State<Homw> createState() => _HomwState();
+}
+
+class _HomwState extends State<Homw> {
+  final List<TranscationModel> _userTransactions = [
     TranscationModel(
         id: '01', title: 'New Shoes', amount: 160, date: DateTime.now()),
     TranscationModel(
         id: '02', title: 'New Shocks', amount: 150, date: DateTime.now()),
   ];
-  //
-  // String? titleInput;
-  // String? amountInput;
 
-  final titleController = TextEditingController();
-  final amountController = TextEditingController();
+  void _addTransaction(String? title, double? amount) {
+    final newTx = TranscationModel(
+      id: DateTime.now().toString(),
+      title: title!,
+      amount: amount!,
+      date: DateTime.now(),
+    );
+    setState(() {
+      _userTransactions.add(newTx);
+    });
+  }
+
+  Future _startAddnewTransaction(BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (contx) {
+        return NewTransaction(
+          AddTransaction: _addTransaction,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Material App',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Material App Bar'),
-        ),
-        body: Column(
-          // mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              child: const Card(
-                child: Text('CHART !'),
-              ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        title: const Text('Personal Expenses'),
+        actions: [
+          IconButton(
+            onPressed: () => _startAddnewTransaction(context),
+            icon: const Icon(Icons.add),
+          ),
+        ],
+      ),
+      body: Column(
+        // mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            child: const Card(
+              child: Text('CHART !'),
             ),
-            Card(
-              elevation: 5,
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Title',
-                      ),
-                      controller: titleController,
-                      // onChanged: (value){
-                      //   titleInput = value;
-                      // },
-                    ),
-                    TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Amount',
-                      ),
-                      controller: amountController,
-                      // onChanged: (value){
-                      //   amountInput = value;
-                      // },
-                    ),
-                    FlatButton(
-                      onPressed: () {
-                        print(titleController.text);
-                        print(amountController.text);
-                      },
-                      textColor: Colors.purple,
-                      child: const Text('Add Trasaction'),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            Column(
-              children: transcations.map((tx) {
-                return Card(
-                  child: Row(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 15, vertical: 10),
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.purple, width: 2)),
-                        padding: const EdgeInsets.all(10),
-                        child: Text(
-                          '₹ ${tx.amount.toString()}',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.purple),
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            tx.title,
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            DateFormat.yMMMd().format(tx.date),
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey.shade700),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
+          ),
+          TransactionList(transactions: _userTransactions),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _startAddnewTransaction(context),
+        child: const Icon(Icons.add),
       ),
     );
   }
