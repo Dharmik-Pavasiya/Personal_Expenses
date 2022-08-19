@@ -24,7 +24,7 @@ class _MyAppState extends State<MyApp> {
         fontFamily: 'Quicksand',
         appBarTheme: AppBarTheme(
           textTheme: ThemeData.light().textTheme.copyWith(
-                bodyText2: const TextStyle(
+                labelLarge: const TextStyle(
                   fontFamily: 'OpenSans',
                   fontWeight: FontWeight.bold,
                   fontSize: 50,
@@ -46,10 +46,10 @@ class Homw extends StatefulWidget {
 
 class _HomwState extends State<Homw> {
   final List<TranscationModel> _userTransactions = [
-    TranscationModel(
-        id: '01', title: 'New Shoes', amount: 160, date: DateTime.now()),
-    TranscationModel(
-        id: '02', title: 'New Shocks', amount: 150, date: DateTime.now()),
+    // TranscationModel(
+    //     id: '01', title: 'New Shoes', amount: 160, date: DateTime.now()),
+    // TranscationModel(
+    //     id: '02', title: 'New Shocks', amount: 150, date: DateTime.now()),
   ];
 
   void _addTransaction(String? title, double? amount) {
