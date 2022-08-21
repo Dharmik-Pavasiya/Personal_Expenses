@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:personal_expenses/widgets/chart.dart';
 import 'package:personal_expenses/widgets/new_transaction.dart';
 import 'package:personal_expenses/widgets/transaction_list.dart';
 import 'model/transaction_model.dart';
@@ -20,14 +21,22 @@ class _MyAppState extends State<MyApp> {
       title: 'Personal Expenses',
       theme: ThemeData(
         primarySwatch: Colors.purple,
+        errorColor: Colors.red,
         accentColor: Colors.amber,
         fontFamily: 'Quicksand',
+        textTheme: ThemeData.light().textTheme.copyWith(
+          labelLarge: const TextStyle(
+            fontFamily: 'OpenSans',
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
         appBarTheme: AppBarTheme(
           textTheme: ThemeData.light().textTheme.copyWith(
                 labelLarge: const TextStyle(
                   fontFamily: 'OpenSans',
                   fontWeight: FontWeight.bold,
-                  fontSize: 50,
+                  fontSize: 100,
                 ),
               ),
         ),
@@ -52,12 +61,22 @@ class _HomwState extends State<Homw> {
     //     id: '02', title: 'New Shocks', amount: 150, date: DateTime.now()),
   ];
 
-  void _addTransaction(String? title, double? amount) {
+  List<TranscationModel> get _recentTransaction {
+    return _userTransactions.where((tx) {
+      return tx.date.isAfter(
+        DateTime.now().subtract(
+          const Duration(days: 7),
+        ),
+      );
+    }).toList();
+  }
+
+  void _addTransaction(String? title, double? amount, DateTime date) {
     final newTx = TranscationModel(
       id: DateTime.now().toString(),
       title: title!,
       amount: amount!,
-      date: DateTime.now(),
+      date: date,
     );
     setState(() {
       _userTransactions.add(newTx);
@@ -73,6 +92,10 @@ class _HomwState extends State<Homw> {
         );
       },
     );
+  }
+
+  void _deleteTransaction(String id){
+    _userTransactions.removeWhere((tx) => tx.id == id);
   }
 
   @override
@@ -92,12 +115,8 @@ class _HomwState extends State<Homw> {
         // mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
-            child: const Card(
-              child: Text('CHART !'),
-            ),
-          ),
-          TransactionList(transactions: _userTransactions),
+          Chart(recentTransaction: _recentTransaction),
+          TransactionList(_userTransactions, _deleteTransaction),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
